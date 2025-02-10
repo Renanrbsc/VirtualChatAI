@@ -1,6 +1,6 @@
-MyChatBot
+VirtualChatAI
 
-MyChatBot is an interactive chatbot project that uses a registered backend model through the Ollama server. The project consists of two main modules:
+VirtualChatAI is an interactive chatbot project that uses a registered backend model through the Ollama server. The project consists of two main modules:
 
 model_register.py: Handles model registration and launching of the Ollama server.
 chat.py: Implements the interactive chat session with a character using the registered model.
