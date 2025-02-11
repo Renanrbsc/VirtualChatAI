@@ -1,14 +1,6 @@
-"""
-chat.py
-
-This module implements the Chat class which manages an interactive conversation
-with a character using a registered backend model.
-"""
-
 import json
 import requests
-from src.model_register import RegisterModel
-
+from src.modules.model_register import RegisterModel
 
 class Chat:
     """
@@ -64,28 +56,33 @@ class Chat:
                     print("Invalid input. Please enter a number.")
 
             self.user = selected_config["user"]
-            self.character = selected_config["character"]
-            self.character_name = self.character["name"]
+            self.char_name = selected_config["character"]["name"]
+            self.char_personality = selected_config["character"]["personality"]
+            self.char_greeting = selected_config["character"]["greeting"]
+            self.char_scenario = selected_config["character"]["scenario"]
             self.context = selected_config["context"]
-            self.scenario = selected_config["scenario"]
+            self.first_person = selected_config["first_person"]
 
         except Exception as e:
             print(f"Error loading chat configuration: {e}")
-            # Set default values in case of error.
             self.user = "User"
-            self.character_name = "Assistant"
-            self.context = "[You are an assistant. Engage in a friendly conversation.]"
-            self.character = "The assistant is very knowledgeable and helpful."
-            self.scenario = f"{self.character_name} is conversing with {self.user}."
+            self.char_name = "Assistant"
+            self.char_personality = "The assistant is very knowledgeable and helpful."
+            self.char_greeting = "Hello! I'm here to assist you."
+            self.char_scenario = f"{self.char_name} is conversing with {self.user}."
+            self.context = "You are an assistant. Engage in a friendly conversation."
+            self.first_person = True
 
-        print(f"\nLoaded chat configuration for {self.character_name}.")
+        print(f"\nLoaded chat configuration for {self.char_name}.")
         print(f"User: {self.user}")
         print("Character:")
-        for key, value in self.character.items():
-            print(f"  {key.capitalize()}: {value}")
-        print(f"Scenario: {self.scenario}")
-        print(f"Context: {self.context}\n")
-
+        print(f"    Name: {self.char_name}")
+        print(f"    Personality: {self.char_personality}")
+        print(f"    Greeting: {self.char_greeting}")
+        print(f"    Scenario: {self.char_scenario}")
+        print(f"    Context: {self.context}")
+        print(f"    First Person: {self.first_person}\n")
+        
     def setup_conversation(self):
         """
         Set up initial conversation parameters.
@@ -96,16 +93,22 @@ class Chat:
         self.stop_sequence = [
             f"{self.user}:",
             f"\n{self.user} ",
-            f"\n{self.character_name}: ",
+            f"\n{self.char_name}: ",
             "\n",
             ". "
         ]
         self.conversation = []
         self.memory = (
-            f"Character: {self.character}\n"
+            f"Character: {self.char_name}\n"
+            f"Personality: {self.char_personality}\n"
+            f"Greeting: {self.char_greeting}\n"
+            f"Scenario: {self.char_scenario}\n"
             f"Context: {self.context}\n"
-            f"[Scenario: {self.scenario}]\n"
         )
+        self.first_person_instruction = ""
+        if self.first_person:
+            self.first_person_instruction = "Instruction: always answer in the first person.\n"
+
 
     def get_chat_options(self) -> dict:
         """
@@ -136,23 +139,27 @@ class Chat:
         Returns:
             str: The conversation memory string.
         """
+        # Pre-calculate the total character count
         total_characters = sum(len(item['content']) for item in self.conversation)
-        while total_characters > 4000:
+        # Instead of re-summing every time, subtract the length of the removed message.
+        while total_characters > 4000 and len(self.conversation) > 1:
             try:
-                self.conversation.pop(1)
-                total_characters = sum(len(item['content']) for item in self.conversation)
+                removed = self.conversation.pop(0)
+                total_characters -= len(removed['content'])
             except Exception as e:
                 print(f"Error removing old messages: {e}")
                 break
 
         formatted_conversation = (
-            "\n".join(
+            self.memory
+            + self.first_person_instruction
+            + "\n".join(
                 f"{msg['role']}: {msg['content']}" for msg in self.conversation
             )
-            + f"\n{self.character_name}: "
+            + f"\n{self.char_name}: "
         )
-        return self.memory + formatted_conversation
-
+        return formatted_conversation   
+     
     def get_response(self, prompt: str, chat_options: dict) -> str:
         """
         Query the backend model and return the character's response.
@@ -178,33 +185,9 @@ class Chat:
             res_text = response.json().get("response", "").strip()
             if res_text and res_text[-1] not in ['?', '!', "."]:
                 res_text += "."
-            if f"{self.character_name}: " in res_text:
-                res_text = res_text.replace(f"{self.character_name}: ", "")
+            if f"{self.char_name}: " in res_text:
+                res_text = res_text.replace(f"{self.char_name}: ", "")
             return res_text
         else:
             print("Error retrieving response:", response.text)
             return ""
-
-    def run(self):
-        """
-        Start an interactive chat session with the character.
-
-        The session can be exited by typing 'exit'.
-        """
-        print(f"Chat with {self.character_name} started! Type 'exit' to quit.")
-
-        while True:
-            user_msg = input("You: ").strip()
-            if user_msg.lower() == "exit":
-                print("Closing...")
-                break
-            if user_msg and user_msg[-1] not in ['?', '!', "."]:
-                user_msg += "."
-
-            self.conversation.append({'role': self.user, 'content': user_msg})
-            prompt = self.update_memory()
-            character_response = self.get_response(prompt, self.chat_options)
-
-            if character_response:
-                print(f"{self.character_name}:", character_response)
-                self.conversation.append({'role': self.character_name, 'content': character_response})

@@ -1,1 +1,6 @@
 requests
+edge-tts
+playsound==1.2.2
+vosk
+keyboard
+pyaudio

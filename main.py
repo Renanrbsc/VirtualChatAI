@@ -1,8 +1,5 @@
-from src.chat import Chat
-
-def main():
-    chatbot = Chat()
-    chatbot.run()
+from src.controller import Controller
 
 if __name__ == "__main__":
-    main()
+    main = Controller()
+    main.run()

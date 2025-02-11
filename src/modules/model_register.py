@@ -3,6 +3,7 @@ import time
 import requests
 import configparser
 
+
 class RegisterModel:
     """
     A class to register a model with Ollama and manage its server.
