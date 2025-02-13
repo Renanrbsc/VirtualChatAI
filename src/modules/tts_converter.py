@@ -25,7 +25,7 @@ class TextToSpeechConverter:
         """
         playsound(file_path)
 
-    def text_to_speech(self, text: str, voice: str = "en-US-JennyNeural") -> None:
+    def text_to_speech(self, text: str, voice: str = "en-US-AvaNeural") -> None:
         """
         Converts the given text to speech and plays the audio.
 
@@ -34,8 +34,29 @@ class TextToSpeechConverter:
 
         Args:
             text (str): The text to be converted to speech.
-            voice (str): The voice to use for the speech synthesis. Defaults to "en-US-JennyNeural".
-        """
+            voice (str): The voice to use for the speech synthesis. 
+                         Alternatives for English:  en-US-AvaMultilingualNeural
+                                                    en-US-AndrewMultilingualNeural
+                                                    en-US-EmmaMultilingualNeural
+                                                    en-US-BrianMultilingualNeural
+                                I liked her         en-US-AvaNeural
+                                                    en-US-AndrewNeural
+                                                    en-US-EmmaNeural
+                                                    en-US-BrianNeural
+                                                    en-US-AnaNeural
+                                                    en-US-AriaNeural
+                                                    en-US-ChristopherNeural
+                                                    en-US-EricNeural
+                                                    en-US-GuyNeural
+                                                    en-US-JennyNeural
+                                                    en-US-MichelleNeural
+                                                    en-US-RogerNeural
+                                                    en-US-SteffanNeural
+                         Alternatives for Portuguese: pt-BR-ThalitaMultilingualNeural
+                                                      pt-BR-AntonioNeural
+                                I liked her           pt-BR-FranciscaNeural
+                                                      
+        """        
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         tts = edge_tts.Communicate(text, voice)

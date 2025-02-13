@@ -86,9 +86,10 @@ class RegisterModel:
                     "--gpu", "1",         # Use 1 GPU
                     "--threads", "4",     # Use 4 threads
                     "--ctx", "4096",      # Set context to 4096 token limit
-                    "-b", "2048",         # Set batch size to 2048
-                    "-ub", "512",         # Set un-batched size to 512
-                    "--num_gpu_layers", "32"  # Allocate 32 GPU layers
+                    "-b", "1024",         # Set batch size to 1024
+                    "-ub", "256",         # Set un-batched size to 512
+                    "--num_gpu_layers", "25"  # Allocate 25 GPU layers
+                    "--tensor_split", "2"  # Equilibrate between CPU, GPU (60% RAM / CPU, 40% GPU)
                 ],
                 stdout=subprocess.DEVNULL,
                 stderr=subprocess.DEVNULL,
@@ -141,5 +142,7 @@ class RegisterModel:
             else:
                 print("Error: Model was not registered after waiting.")
                 return
+        else:
+            print("Model is already registered!")
 
         self.start_ollama()
