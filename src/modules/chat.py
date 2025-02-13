@@ -60,6 +60,8 @@ class Chat:
             self.char_personality = selected_config["character"]["personality"]
             self.char_greeting = selected_config["character"]["greeting"]
             self.char_scenario = selected_config["character"]["scenario"]
+            self.char_language = selected_config["character"]["language"]
+            self.char_voice = selected_config["character"]["voice"]
             self.context = selected_config["context"]
             self.first_person = selected_config["first_person"]
 
@@ -70,6 +72,8 @@ class Chat:
             self.char_personality = "The assistant is very knowledgeable and helpful."
             self.char_greeting = "Hello! I'm here to assist you."
             self.char_scenario = f"{self.char_name} is conversing with {self.user}."
+            self.char_language = "English"
+            self.char_voice = "female"
             self.context = "You are an assistant. Engage in a friendly conversation."
             self.first_person = True
 
@@ -80,6 +84,8 @@ class Chat:
         print(f"    Personality: {self.char_personality}")
         print(f"    Greeting: {self.char_greeting}")
         print(f"    Scenario: {self.char_scenario}")
+        print(f"    Language: {self.char_language}")
+        print(f"    Voice: {self.char_voice}")
         print(f"    Context: {self.context}")
         print(f"    First Person: {self.first_person}\n")
         
@@ -103,6 +109,8 @@ class Chat:
             f"Personality: {self.char_personality}\n"
             f"Greeting: {self.char_greeting}\n"
             f"Scenario: {self.char_scenario}\n"
+            f"Language: {self.char_language}\n"
+            f"Voice: {self.char_voice}\n"
             f"Context: {self.context}\n"
         )
         self.first_person_instruction = ""
