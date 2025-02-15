@@ -8,6 +8,8 @@ __pycache__/
 
 # Folders
 audio_models/
+*.mp3
+*.wav
 
 # Configs
 *.ini

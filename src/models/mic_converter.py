@@ -12,12 +12,33 @@ class MicConverter:
     A class to handle audio recording from the microphone and
     transcription using the Vosk model.
     """
-    def __init__(self):
+    def __init__(self, input_language: str = "en"):
         """
         Initialize the MicConverter.
         """
-        self.model_path = os.path.abspath(r"audio_models\model")
         self.output_filename = os.path.abspath(r"audio\input.wav")
+        self.define_model(input_language)
+
+    def define_model(self, input_language: str):
+        """
+        Define the Vosk model to be used for transcription.
+        """
+        
+        model_path = os.path.abspath(r"audio_models")
+        if input_language == "en":
+            self.model_path = os.path.join(model_path, "vosk-model-small-en-us-0.15")
+        elif input_language == "pt":
+            self.model_path = os.path.join(model_path, "vosk-model-small-pt-0.3")
+        else:
+            print("Error: Invalid input language!")
+            return ""
+        
+        if not os.path.exists(self.model_path):
+            print("Error: Vosk model not found!")
+            return ""
+            
+        self.model = Model(self.model_path)
+
 
     def record_audio(self) -> str:
         """
@@ -82,12 +103,6 @@ class MicConverter:
             str: The complete transcription as a single string.
                 Returns an empty string if an error occurs.
         """
-
-        if not os.path.exists(self.model_path):
-            print("Error: Vosk model not found!")
-            return ""
-        
-        model = Model(self.model_path)
         transcription_fragments = []
         try:
             with wave.open(audio_path, "rb") as wf:
@@ -95,7 +110,7 @@ class MicConverter:
                     print("Error: The audio file must be a mono WAV in PCM format.")
                     return ""
 
-                recognizer = KaldiRecognizer(model, wf.getframerate())
+                recognizer = KaldiRecognizer(self.model, wf.getframerate())
                 data = wf.readframes(4000)
                 while data:
                     if recognizer.AcceptWaveform(data):

@@ -85,7 +85,7 @@ pip install -r requirements.txt
 
 2. **Change the Model Folder Name**
 
-   After downloading the model, extract it to a folder. By default, the `mic_converter.py` expects the model to be located in a folder named `model` inside the `audio_models` directory. 
+   After downloading the model, extract it to a folder. `mic_converter.py` expects the model to be located in a folder named `audio_model` directory. 
 
    For example, if you downloaded the model and extracted it, you should have the following structure:
       
@@ -93,16 +93,16 @@ pip install -r requirements.txt
 
     ├── audio_models/ 
 
-    │└── model/ # This is where the Vosk model should be placed 
+    │└── model.../ # This is where the Vosk model should be placed 
 
-    │ ├── other languages, but the algorithm only uses 'model'
+    │ 
 
     ├── src/ 
 
-    Make sure to rename the extracted model folder to `model` if it has a different name.
 
-    My model used in tests is:
-    [vosk-model-small-en-us-zamia-0.5](https://alphacephei.com/vosk/models/vosk-model-small-en-us-zamia-0.5.zip)
+    My model used:
+    [vosk-model-small-pt-0.3](https://alphacephei.com/vosk/models/vosk-model-small-pt-0.3.zip)
+    [vosk-model-small-en-us-0.15](https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip)
 
 ### 3. Chat Configuration (`chat_config.json`)
 
