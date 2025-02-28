@@ -27,6 +27,11 @@ class ChatBase:
         try:
             selected_config = self.get_character_info(character_name)
 
+            if output_language == "pt":
+                output_language = "Portuguese"
+            else:
+                output_language = "English"
+
             self.user = selected_config["user"]
             self.char_name = selected_config["character"]["name"]
             self.char_personality = selected_config["character"]["personality"]
@@ -48,9 +53,6 @@ class ChatBase:
             self.char_voice = "Soft"
             self.context = "You are an assistant. Engage in a friendly conversation."
             self.first_person = True
-        
-        self.setup_conversation()
-        self.chat_options = self.get_chat_options()
 
     def setup_conversation(self) -> None:
         """
@@ -64,6 +66,12 @@ class ChatBase:
             ". "
         ]
         self.conversation = []
+
+        if self.first_person:
+            self.person_instruction = "Always answer in the first person.\n"
+        else:
+            self.person_instruction = "Always answer in the third person and describe scenario.\n"
+
         self.memory = (
             f"Character: {self.char_name}\n"
             f"Personality: {self.char_personality}\n"
@@ -72,16 +80,10 @@ class ChatBase:
             f"Language: {self.char_language}\n"
             f"Voice: {self.char_voice}\n"
             f"Context: {self.context}\n"
+            f"Instruction: {self.person_instruction}\n"
         )
-        self.first_person_instruction = ""
-        if self.first_person:
-            self.first_person_instruction = "Instruction: always answer in the first person.\n"
 
-    def get_chat_options(self) -> dict:
-        """
-        Return the options for generating the chatbot response.
-        """
-        return {
+        self.chat_options = {
             "temperature": 0.8,
             "top_p": 0.9,
             "max_tokens": 240,
@@ -105,7 +107,6 @@ class ChatBase:
 
         formatted_conversation = (
             self.memory
-            + self.first_person_instruction
             + "\n".join(
                 f"{msg['role']}: {msg['content']}" for msg in self.conversation
             )

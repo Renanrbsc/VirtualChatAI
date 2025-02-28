@@ -28,11 +28,7 @@ class PhraseTranslator:
         self.user_lang = user_lang
         self.bot_lang = bot_lang
 
-        if self.user_lang == self.bot_lang:
-            self.translator_to_en = None
-            self.translator_from_en = None
-        else:
-            self.load_models()
+        self.load_models()
 
     def load_models(self) -> None:
         """

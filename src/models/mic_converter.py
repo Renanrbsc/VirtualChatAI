@@ -63,7 +63,6 @@ class MicConverter:
         )
 
         frames = []
-        print("Recording...")
         recording = True
         while recording:
             if keyboard.is_pressed("SPACE"):
@@ -73,8 +72,6 @@ class MicConverter:
             # Check if the key is released
             if not keyboard.is_pressed("SPACE"):
                 recording = False
-
-        print("Stopped recording.")
 
         audio_stream.stop_stream()
         audio_stream.close()

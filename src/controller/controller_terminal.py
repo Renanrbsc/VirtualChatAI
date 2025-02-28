@@ -26,11 +26,10 @@ class TerminalChatController:
         self.chat = ChatBase()
         self.view = TerminalView()
 
-        # Select input and output languages
+        # Select input language
         self.input_language = self.view.select_input_language()
-        self.output_language = self.view.select_output_language()
-        self.translator = PhraseTranslator(user_lang=self.input_language, bot_lang=self.output_language)
-        self.tts_converter = TextToSpeechConverter(self.output_language)
+        self.translator = PhraseTranslator(user_lang=self.input_language)
+        self.tts_converter = TextToSpeechConverter(self.input_language)
         self.mic_converter = MicConverter(self.input_language)
 
         # Select the user input method
@@ -53,7 +52,12 @@ class TerminalChatController:
 
         selected_character = self.view.get_input("Selecione um personagem: ")
         character_info = self.chat.get_character_info(selected_character)
-        self.chat.load_chat_config(selected_character, self.output_language)
+        self.chat.load_chat_config(selected_character, self.input_language)
+
+        self.chat.setup_conversation()
+        if self.input_language != 'en':
+            self.chat.memory = self.translator.translate_user_to_en(self.chat.memory)
+
         self.view.display_character_info(character_info)
 
     def get_input_user(self):
@@ -100,11 +104,12 @@ class TerminalChatController:
                     character_response = self.chat.get_response(prompt)
                     self.view.display_message(f"{self.chat.char_name}: {character_response}")
 
-                    character_response_translated = self.translator.translate_en_to_user(character_response)
-                    if character_response_translated:
+                    if self.input_language != 'en':
+                        character_response_translated = self.translator.translate_en_to_user(character_response)
                         self.view.display_message(f"{self.chat.char_name}: {character_response_translated}")
-
-                    self.tts_converter.text_to_speech(character_response)
+                        self.tts_converter.text_to_speech(character_response_translated)
+                    else:
+                        self.tts_converter.text_to_speech(character_response)
 
                     count_switch += 1
                     if count_switch > 3:
@@ -141,8 +146,8 @@ class TerminalChatController:
             if user_msg and user_msg[-1] not in ['?', '!', "."]:
                 user_msg += "."
 
-            user_msg_translated = self.translator.translate_user_to_en(user_msg)
-            if user_msg_translated:
+            if self.input_language != 'en':
+                user_msg_translated = self.translator.translate_user_to_en(user_msg)
                 self.view.display_message(f"{self.chat.user}: {user_msg_translated}")
                 user_msg = user_msg_translated
 
@@ -152,11 +157,12 @@ class TerminalChatController:
             character_response = self.chat.get_response(prompt)
             self.view.display_message(f"{self.chat.char_name}: {character_response}")
 
-            character_response_translated = self.translator.translate_en_to_user(character_response)
-            if character_response_translated:
+            if self.input_language != 'en':
+                character_response_translated = self.translator.translate_en_to_user(character_response)
                 self.view.display_message(f"{self.chat.char_name}: {character_response_translated}")
-
-            self.tts_converter.text_to_speech(character_response)
+                self.tts_converter.text_to_speech(character_response_translated)
+            else:
+                self.tts_converter.text_to_speech(character_response)
 
             character_response_switch = self.switch_response_attempt(prompt)
             if character_response_switch:

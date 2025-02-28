@@ -3,6 +3,7 @@ import asyncio
 import os
 import time
 from playsound import playsound
+import threading
 
 
 class TextToSpeechConverter:
@@ -61,24 +62,20 @@ class TextToSpeechConverter:
 
     def text_to_speech(self, text: str) -> None:
         """
-        Converts the given text to speech and plays the audio.
+        Converts text to speech asynchronously
+        """
+        def convert_and_play():
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            tts = edge_tts.Communicate(text, self.voice)
+            loop.run_until_complete(tts.save(self.output_path))
 
-        This function uses the edge_tts library to generate speech from text,
-        saves it to a specified output path, and plays the audio file.
+            # Play the audio file using playsound
+            self.play_audio(self.output_path)
 
-        Args:
-            text (str): The text to be converted to speech.
-            
-                                                      
-        """        
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        tts = edge_tts.Communicate(text, self.voice)
-        loop.run_until_complete(tts.save(self.output_path))
+            # Wait briefly and remove the file after playback
+            time.sleep(1)
+            os.remove(self.output_path)
 
-        # Play the audio file using playsound
-        self.play_audio(self.output_path)
-
-        # Wait briefly and remove the file after playback
-        time.sleep(1)
-        os.remove(self.output_path)
+        # Run conversion and playback in a separate thread
+        threading.Thread(target=convert_and_play, daemon=True).start()
